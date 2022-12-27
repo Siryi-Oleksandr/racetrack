@@ -36,3 +36,12 @@ th {
 // table {
 //   background-color: #ff33cc;
 // }
+
+.table-result__body tr:first-child {
+  background-color: rgb(136, 176, 136);
+  font-weight: 600;
+  font-size: 16px;
+}
+.table-result__body tr:not(:first-child) {
+  background-color: rgb(223, 223, 223);
+}
