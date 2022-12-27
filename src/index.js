@@ -82,10 +82,6 @@ function onStartRace() {
   });
 }
 
-function getRandomeTime(min, max) {
-  return Math.floor(Math.random() * (max - min + 1) + min);
-}
-
 function updateWinnerField(message) {
   refs.winnerField.textContent = message;
 }
@@ -105,6 +101,7 @@ function updateResultTable(result) {
   refs.tableBody.innerHTML = trArr;
 }
 
+// TODO *************************************
 function onFormSubmit(evt) {
   evt.preventDefault();
   const { selectName, rate } = evt.currentTarget.elements;
@@ -171,4 +168,8 @@ function renderSelectField(horses) {
     .map(horse => `<option value="${horse}">${horse}</option>`)
     .join('');
   refs.select.innerHTML = selectList;
+}
+
+function getRandomeTime(min, max) {
+  return Math.floor(Math.random() * (max - min + 1) + min);
 }
