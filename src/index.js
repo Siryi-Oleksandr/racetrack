@@ -1,3 +1,6 @@
+import { Notify } from 'notiflix/build/notiflix-notify-aio';
+import { Report } from 'notiflix/build/notiflix-report-aio';
+
 const horses = [
   'Hilda',
   'Secretariat',
@@ -19,9 +22,10 @@ const horsesHistory = [
   { name: 'Kopengagen', victories: 0 },
   { name: 'King', victories: 0 },
 ];
-// вибірка елементів
+// choose items
 const refs = {
-  btnStart: document.querySelector('.js-btn'),
+  btnStart: document.querySelector('.js-btn-bet'),
+  btnOnlyRace: document.querySelector('.js-btn-race'),
   form: document.querySelector('.js-form'),
   select: document.querySelector('#select'),
   userBalance: document.querySelector('.js-user-balance'),
@@ -31,10 +35,13 @@ const refs = {
   tableBodyHistory: document.querySelector('.js-table-history'),
 };
 
-// додаємо слухачів
+// add listener
 
-refs.btnStart.addEventListener('click', onStartRace);
+refs.btnStart.addEventListener('click', onStartRaceWithBet);
 refs.form.addEventListener('submit', onFormSubmit);
+refs.btnOnlyRace.addEventListener('click', onStartRace);
+
+// Base settings
 
 let runResult = [];
 let userBalance = 100;
@@ -42,9 +49,10 @@ let userRate = 0;
 let selectedHorse = null;
 
 refs.userBalance.textContent = userBalance;
-onLocalStorageSet(); // вносимо історію переможців у localStorage
-renderSelectField(horses); // рендеримо Selections
-//  Створюємо Promise
+onLocalStorageSet(); // add history of the winners to the localStorage
+renderSelectField(horses); // rendering Selections
+
+//  create Promise
 
 function run(horse) {
   return new Promise(resolve => {
@@ -57,7 +65,11 @@ function run(horse) {
 }
 
 // Сет функцій
-function onStartRace() {
+function onStartRaceWithBet() {
+  // if (checkUserValue(userRate)) {
+  //   return console.log('****');
+  // }
+
   updateWinnerField('');
   updateProgressField('🐴The race has begun. Wait result.🐴');
 
@@ -66,15 +78,16 @@ function onStartRace() {
   // Визначаємо одного переможця (найшвидший проміс)
   Promise.race(promises).then(({ horse, time }) => {
     updateWinnerField(`Won horse "${horse}" at time ${time}.`);
+
     rateResult(horse);
+
     noteWinner(horse);
     onLocalStorageSet();
   });
 
   // Виводимо результати всього забігу
   Promise.all(promises).then(x => {
-    updateProgressField('The race has finished 🥇. You can do new rate 💰');
-
+    updateProgressField('The race has finished 🥇. You can do new bet 💰');
     runResult.push(x);
     runResult = runResult[0].sort((a, b) => a.time - b.time);
     updateResultTable(runResult);
@@ -104,21 +117,22 @@ function updateResultTable(result) {
 // TODO *************************************
 function onFormSubmit(evt) {
   evt.preventDefault();
+
   const { selectName, rate } = evt.currentTarget.elements;
   selectedHorse = selectName.value;
   userRate = +rate.value;
+  console.log('userRate', userRate);
 
-  if (userBalance < +rate.value) {
-    return console.log('Not enougth money');
+  if (checkUserValue(userRate)) {
+    userBalance -= +rate.value;
+
+    refs.userBalance.textContent = userBalance;
+    rate.value = '';
+    // rateResult(selectedHorse);
   }
-  if (rate.value === '' || +rate.value <= 0) {
-    return console.log('Wrong your rate');
-  }
-  userBalance -= +rate.value;
-  refs.userBalance.textContent = userBalance;
-  rate.value = '';
 }
 
+// function checking result of the race
 function rateResult(horse) {
   const isResult = horse === selectedHorse;
   return isResult ? win() : lose();
@@ -128,12 +142,18 @@ function win() {
   userRate *= 10;
   userBalance += userRate;
   refs.userBalance.textContent = userBalance;
-  console.log(`You win ${userRate} $ and now you balanse ${userBalance} $`);
+  Report.success(
+    `You win ${userRate} $`,
+    `Now you balanse ${userBalance} $`,
+    'Okay'
+  );
+  // console.log(`You win ${userRate} $ and now you balanse ${userBalance} $`);
 }
 function lose() {
-  console.log('You lost');
+  Report.failure('You lost', '', 'Okay');
+  // console.log('You lost');
 }
-// poбота з LocalStorage
+// work with LocalStorage
 function onLocalStorageSet() {
   let savedData = localStorage.getItem('rases-history');
   savedData = savedData ? JSON.parse(savedData) : horsesHistory; //перевіряємо якщо дані в LocalStorafe є, то перезаписуємо їх, якщо немає, створюємо обєкт з такими властивостями
@@ -141,7 +161,7 @@ function onLocalStorageSet() {
 }
 
 function updateHistoryTable(historyData) {
-  const trArr = historyData
+  const markupHistoryTable = historyData
     .map(
       ({ name, victories }) => `<tr>
             <td>${name}</td>
@@ -149,8 +169,10 @@ function updateHistoryTable(historyData) {
           </tr>`
     )
     .join('');
-  refs.tableBodyHistory.innerHTML = trArr;
+  refs.tableBodyHistory.innerHTML = markupHistoryTable;
 }
+
+// write winner to history table
 function noteWinner(winner) {
   let savedData = localStorage.getItem('rases-history');
   savedData = savedData ? JSON.parse(savedData) : horsesHistory;
@@ -163,6 +185,7 @@ function noteWinner(winner) {
   localStorage.setItem('rases-history', JSON.stringify(savedData));
 }
 
+// add items to select field on page
 function renderSelectField(horses) {
   const selectList = horses
     .map(horse => `<option value="${horse}">${horse}</option>`)
@@ -172,4 +195,52 @@ function renderSelectField(horses) {
 
 function getRandomeTime(min, max) {
   return Math.floor(Math.random() * (max - min + 1) + min);
+}
+
+function checkUserValue(userValue) {
+  if (userValue === '') {
+    Report.failure('Wrong your bet', 'Race was start without your bet', 'Okay');
+    return false;
+  }
+  if (userValue < 0) {
+    Report.failure('Wrong your bet', 'Your bet must be more then 0', 'Okay');
+    return false;
+  }
+  if (userBalance < userValue) {
+    Report.failure(
+      'Wrong your bet',
+      'You have not enough money on balance',
+      'Okay'
+    );
+    return false;
+  }
+  console.log(true);
+
+  return true;
+}
+
+function onStartRace() {
+  updateWinnerField('');
+  updateProgressField('🐴The race has begun. Wait result.🐴');
+
+  const promises = horses.map(horse => run(horse)); // cтворюємо масив промісів
+
+  // Визначаємо одного переможця (найшвидший проміс)
+  Promise.race(promises).then(({ horse, time }) => {
+    updateWinnerField(`Won horse "${horse}" at time ${time}.`);
+
+    // rateResult(horse);
+
+    noteWinner(horse);
+    onLocalStorageSet();
+  });
+
+  // Виводимо результати всього забігу
+  Promise.all(promises).then(x => {
+    updateProgressField('The race has finished 🥇. You can do new rate 💰');
+    runResult.push(x);
+    runResult = runResult[0].sort((a, b) => a.time - b.time);
+    updateResultTable(runResult);
+    runResult.length = 0;
+  });
 }

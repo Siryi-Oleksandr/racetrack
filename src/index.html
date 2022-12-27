@@ -14,34 +14,43 @@
       <p class="subtitle">Sprint, 2600m, famous horses</p>
 
       <table>
+        <caption>
+          The history of horse racing this season
+        </caption>
         <thead>
           <tr>
             <th>Horse</th>
             <th>Victories</th>
           </tr>
         </thead>
-        <tbody class="js-table-history"></tbody>
+        <tbody class="table-history js-table-history"></tbody>
       </table>
 
       <hr />
 
-      <p>Your rates</p>
-      <p>Your balance: <span class="js-user-balance">100</span>$</p>
+      <div class="client-section">
+        <p>Client rates</p>
+        <p>Your balance: <span class="js-user-balance">100</span>$</p>
 
-      <form class="js-form">
-        <label
-          >Money<input
-            class="js-input"
-            type="number"
-            name="rate"
-            placeholder="100"
-        /></label>
+        <form class="js-form">
+          <label
+            >Money<input
+              class="js-input"
+              type="number"
+              name="rate"
+              placeholder="20"
+          /></label>
 
-        <select name="selectName" id="select"></select>
-        <button class="js-btn" type="submit">Start race</button>
-      </form>
+          <select name="selectName" id="select"></select>
+          <button class="btn js-btn-bet" type="submit">
+            Start race with bet
+          </button>
+        </form>
+      </div>
 
       <hr />
+      <button class="btn js-btn-race" type="button">Start race</button>
+      <p class="inform-title">Information about race</p>
 
       <p class="js-progress"></p>
 

@@ -8,16 +8,29 @@ body {
   background-color: #fff;
   color: #2f2f37;
   padding: 15px;
+  text-align: center;
+
+  background: #4781b4; /* fallback for old browsers */
+  background: -webkit-linear-gradient(
+    to left,
+    #cdc992,
+    #1b72bf
+  ); /* Chrome 10-25, Safari 5.1-6 */
+  background: linear-gradient(
+    to left,
+    #d6d29f,
+    #277fcb
+  ); /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
 }
 
 .container {
   padding: 15px;
   max-width: 960px;
   margin: 0 auto;
-  outline: 1px solid tomato;
 }
 
 table {
+  margin: 0 auto;
   table-layout: fixed;
   width: 400px;
   border-collapse: collapse;
@@ -33,9 +46,9 @@ th {
 //   background-color: #e495e4;
 // }
 
-// table {
-//   background-color: #ff33cc;
-// }
+thead {
+  background-color: #d2d8ab;
+}
 
 .table-result__body tr:first-child {
   background-color: rgb(136, 176, 136);
@@ -45,3 +58,39 @@ th {
 .table-result__body tr:not(:first-child) {
   background-color: rgb(223, 223, 223);
 }
+
+.table-history {
+  background-color: rgb(223, 223, 223);
+}
+
+p {
+  font-size: 18px;
+  font-weight: 500;
+}
+
+caption {
+  font-size: 22px;
+  font-weight: 500;
+}
+
+.btn {
+  margin: 20px auto;
+  border-radius: 10px;
+  border-color: transparent;
+  cursor: pointer;
+  padding: 10px 15px;
+  min-height: 30px;
+  min-width: 120px;
+  font-size: 18px;
+  font-weight: 600;
+  box-shadow: rgba(0, 0, 0, 0.17) 0px -23px 25px 0px inset,
+    rgba(0, 0, 0, 0.15) 0px -36px 30px 0px inset,
+    rgba(0, 0, 0, 0.1) 0px -79px 40px 0px inset, rgba(0, 0, 0, 0.06) 0px 2px 1px,
+    rgba(0, 0, 0, 0.09) 0px 4px 2px, rgba(0, 0, 0, 0.09) 0px 8px 4px,
+    rgba(0, 0, 0, 0.09) 0px 16px 8px, rgba(0, 0, 0, 0.09) 0px 32px 16px;
+}
+
+// .client-section {
+//   padding: 40px auto;
+//   background-color: #fff;
+// }
