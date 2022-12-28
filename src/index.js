@@ -1,15 +1,15 @@
-import { Notify } from 'notiflix/build/notiflix-notify-aio';
+import { Loading } from 'notiflix/build/notiflix-loading-aio';
 import { Report } from 'notiflix/build/notiflix-report-aio';
 
 const horses = [
   'Hilda',
   'Secretariat',
-  'Eclipse',
-  'Absent',
-  'Parametr',
-  'Bucephalus',
-  'Kopengagen',
-  'King',
+  // 'Eclipse',
+  // 'Absent',
+  // 'Parametr',
+  // 'Bucephalus',
+  // 'Kopengagen',
+  // 'King',
 ];
 
 const horsesHistory = [
@@ -36,9 +36,9 @@ const refs = {
 };
 
 // add listener
-
-refs.btnStart.addEventListener('click', onStartRaceWithBet);
 refs.form.addEventListener('submit', onFormSubmit);
+refs.btnStart.addEventListener('click', onStartRaceWithBet);
+
 refs.btnOnlyRace.addEventListener('click', onStartRace);
 
 // Base settings
@@ -66,9 +66,12 @@ function run(horse) {
 
 // Сет функцій
 function onStartRaceWithBet() {
-  // if (checkUserValue(userRate)) {
-  //   return console.log('****');
-  // }
+  console.log('userRate', userRate);
+
+  if (!checkUserValue(userRate)) {
+    console.log('****');
+    return;
+  }
 
   updateWinnerField('');
   updateProgressField('🐴The race has begun. Wait result.🐴');
@@ -123,9 +126,8 @@ function onFormSubmit(evt) {
   userRate = +rate.value;
   console.log('userRate', userRate);
 
-  if (checkUserValue(userRate)) {
+  if (checkUserValueForSubmit(userRate)) {
     userBalance -= +rate.value;
-
     refs.userBalance.textContent = userBalance;
     rate.value = '';
     // rateResult(selectedHorse);
@@ -135,23 +137,21 @@ function onFormSubmit(evt) {
 // function checking result of the race
 function rateResult(horse) {
   const isResult = horse === selectedHorse;
-  return isResult ? win() : lose();
+  return isResult ? win(horse) : lose(horse);
 }
 
-function win() {
+function win(horse) {
   userRate *= 10;
   userBalance += userRate;
   refs.userBalance.textContent = userBalance;
   Report.success(
     `You win ${userRate} $`,
-    `Now you balanse ${userBalance} $`,
+    `Won ${horse} and now you balanse ${userBalance} $`,
     'Okay'
   );
-  // console.log(`You win ${userRate} $ and now you balanse ${userBalance} $`);
 }
-function lose() {
-  Report.failure('You lost', '', 'Okay');
-  // console.log('You lost');
+function lose(horse) {
+  Report.failure('You lost', `Won ${horse}`, 'Okay');
 }
 // work with LocalStorage
 function onLocalStorageSet() {
@@ -219,6 +219,13 @@ function checkUserValue(userValue) {
   return true;
 }
 
+function checkUserValueForSubmit(userValue) {
+  if (userValue === '' || userValue < 0 || userBalance < userValue) {
+    return false;
+  }
+  return true;
+}
+
 function onStartRace() {
   updateWinnerField('');
   updateProgressField('🐴The race has begun. Wait result.🐴');
@@ -228,8 +235,6 @@ function onStartRace() {
   // Визначаємо одного переможця (найшвидший проміс)
   Promise.race(promises).then(({ horse, time }) => {
     updateWinnerField(`Won horse "${horse}" at time ${time}.`);
-
-    // rateResult(horse);
 
     noteWinner(horse);
     onLocalStorageSet();
