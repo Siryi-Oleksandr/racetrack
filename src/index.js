@@ -1,4 +1,3 @@
-import { Loading } from 'notiflix/build/notiflix-loading-aio';
 import { Report } from 'notiflix/build/notiflix-report-aio';
 
 const horses = [
@@ -38,7 +37,6 @@ const refs = {
 // add listener
 refs.form.addEventListener('submit', onFormSubmit);
 refs.btnStart.addEventListener('click', onStartRaceWithBet);
-
 refs.btnOnlyRace.addEventListener('click', onStartRace);
 
 // Base settings
@@ -65,23 +63,23 @@ function run(horse) {
 }
 
 // Сет функцій
+
 function onStartRaceWithBet() {
   updateWinnerField('');
   updateProgressField('🐴The race has begun. Wait result.🐴');
 
-  const promises = horses.map(horse => run(horse)); // cтворюємо масив промісів
+  const promises = horses.map(horse => run(horse)); // create array with promises
 
-  // Визначаємо одного переможця (найшвидший проміс)
+  // Determine one winner (the fastest promis)
   Promise.race(promises).then(({ horse, time }) => {
     updateWinnerField(`Won horse "${horse}" at time ${time}.`);
-
+    winner = horse;
     rateResult(horse);
-
     noteWinner(horse);
     onLocalStorageSet();
   });
 
-  // Виводимо результати всього забігу
+  // Create full result  current race
   Promise.all(promises).then(x => {
     updateProgressField('The race has finished 🥇. You can do new bet 💰');
     runResult.push(x);
@@ -94,9 +92,11 @@ function onStartRaceWithBet() {
 function updateWinnerField(message) {
   refs.winnerField.textContent = message;
 }
+
 function updateProgressField(message) {
   refs.progress.textContent = message;
 }
+
 function updateResultTable(result) {
   const trArr = result
     .map(
@@ -110,7 +110,6 @@ function updateResultTable(result) {
   refs.tableBody.innerHTML = trArr;
 }
 
-// TODO *************************************
 function onFormSubmit(evt) {
   evt.preventDefault();
 
@@ -122,7 +121,6 @@ function onFormSubmit(evt) {
     userBalance -= +rate.value;
     refs.userBalance.textContent = userBalance;
     rate.value = '';
-    // rateResult(selectedHorse);
   }
 }
 
@@ -142,9 +140,11 @@ function win() {
     'Okay'
   );
 }
+
 function lose(horse) {
   Report.failure('You lost', `Won horse ${horse}`, 'Okay');
 }
+
 // work with LocalStorage
 function onLocalStorageSet() {
   let savedData = localStorage.getItem('rases-history');
@@ -208,13 +208,6 @@ function checkUserValue(userValue) {
 
   return true;
 }
-
-// function checkUserValueForSubmit(userValue) {
-//   if (userValue === '' || userValue < 0 || userBalance < userValue) {
-//     return false;
-//   }
-//   return true;
-// }
 
 function onStartRace() {
   updateWinnerField('');
