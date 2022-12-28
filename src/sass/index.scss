@@ -25,14 +25,14 @@ body {
 
 .container {
   padding: 15px;
-  max-width: 960px;
+  max-width: 768px;
   margin: 0 auto;
 }
 
 table {
   margin: 0 auto;
   table-layout: fixed;
-  width: 400px;
+  min-width: 300px;
   border-collapse: collapse;
   border: 3px solid grey;
 }
@@ -41,10 +41,6 @@ td,
 th {
   border: 1px solid grey;
 }
-
-// tbody tr:nth-child(even) {
-//   background-color: #e495e4;
-// }
 
 thead {
   background-color: #d2d8ab;
