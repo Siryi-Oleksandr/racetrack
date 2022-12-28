@@ -4,12 +4,12 @@ import { Report } from 'notiflix/build/notiflix-report-aio';
 const horses = [
   'Hilda',
   'Secretariat',
-  // 'Eclipse',
-  // 'Absent',
-  // 'Parametr',
-  // 'Bucephalus',
-  // 'Kopengagen',
-  // 'King',
+  'Eclipse',
+  'Absent',
+  'Parametr',
+  'Bucephalus',
+  'Kopengagen',
+  'King',
 ];
 
 const horsesHistory = [
@@ -66,13 +66,6 @@ function run(horse) {
 
 // Сет функцій
 function onStartRaceWithBet() {
-  console.log('userRate', userRate);
-
-  if (!checkUserValue(userRate)) {
-    console.log('****');
-    return;
-  }
-
   updateWinnerField('');
   updateProgressField('🐴The race has begun. Wait result.🐴');
 
@@ -124,9 +117,8 @@ function onFormSubmit(evt) {
   const { selectName, rate } = evt.currentTarget.elements;
   selectedHorse = selectName.value;
   userRate = +rate.value;
-  console.log('userRate', userRate);
 
-  if (checkUserValueForSubmit(userRate)) {
+  if (checkUserValue(userRate)) {
     userBalance -= +rate.value;
     refs.userBalance.textContent = userBalance;
     rate.value = '';
@@ -137,21 +129,21 @@ function onFormSubmit(evt) {
 // function checking result of the race
 function rateResult(horse) {
   const isResult = horse === selectedHorse;
-  return isResult ? win(horse) : lose(horse);
+  return isResult ? win() : lose(horse);
 }
 
-function win(horse) {
+function win() {
   userRate *= 10;
   userBalance += userRate;
   refs.userBalance.textContent = userBalance;
   Report.success(
     `You win ${userRate} $`,
-    `Won ${horse} and now you balanse ${userBalance} $`,
+    `Now you balanse ${userBalance} $`,
     'Okay'
   );
 }
 function lose(horse) {
-  Report.failure('You lost', `Won ${horse}`, 'Okay');
+  Report.failure('You lost', `Won horse ${horse}`, 'Okay');
 }
 // work with LocalStorage
 function onLocalStorageSet() {
@@ -179,7 +171,6 @@ function noteWinner(winner) {
   savedData.forEach(elem => {
     if (elem.name === winner) {
       elem.victories += 1;
-      console.log(elem);
     }
   });
   localStorage.setItem('rases-history', JSON.stringify(savedData));
@@ -214,17 +205,16 @@ function checkUserValue(userValue) {
     );
     return false;
   }
-  console.log(true);
 
   return true;
 }
 
-function checkUserValueForSubmit(userValue) {
-  if (userValue === '' || userValue < 0 || userBalance < userValue) {
-    return false;
-  }
-  return true;
-}
+// function checkUserValueForSubmit(userValue) {
+//   if (userValue === '' || userValue < 0 || userBalance < userValue) {
+//     return false;
+//   }
+//   return true;
+// }
 
 function onStartRace() {
   updateWinnerField('');
