@@ -73,7 +73,6 @@ function onStartRaceWithBet() {
   // Determine one winner (the fastest promis)
   Promise.race(promises).then(({ horse, time }) => {
     updateWinnerField(`Won horse "${horse}" at time ${time}.`);
-    winner = horse;
     rateResult(horse);
     noteWinner(horse);
     onLocalStorageSet();
